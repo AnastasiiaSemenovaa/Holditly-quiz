@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Holditly · 2-minute quiz</title>
+<meta name="description" content="Take the 2-minute quiz and see how much your impulse buys could put toward your goal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2; --card:#FFFFFF; --ink:#1C1B19; --muted:#6B675F; --line:#E6E0D6;
+  --accent:#2F6B4F; --accent-ink:#FFFFFF; --accent-soft:#E4EFE8; --warn:#C2410C; --warn-soft:#F6D9C9; --hi:#F2C14E; --hi-soft:#FBF0D2;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100dvh}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 40px;min-height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;height:44px}
+.logo{font-weight:500;font-size:18px;letter-spacing:-.01em}.logo b{font-weight:700}
+.back,.close{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;visibility:hidden;color:var(--muted)}
+.back.on,.close.on{visibility:visible}.back:hover,.close:hover{background:var(--line)}
+.close{margin-left:auto}
+.bar{height:4px;background:var(--line);border-radius:4px;margin:8px 0 24px;overflow:hidden}
+.bar.off{visibility:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s ease}
+main{flex:1;display:flex;flex-direction:column}
+h1,h2{font-family:Fraunces,Georgia,serif;letter-spacing:-.02em;line-height:1.15}
+h1{font-size:34px}h2{font-size:26px;margin-bottom:8px}
+.sub{color:var(--muted);font-size:15px;line-height:1.5;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;font-size:16px;font-weight:500;transition:border-color .15s,background .15s,transform .1s}
+.opt:hover{border-color:#cfc6b8}.opt:active{transform:scale(.99)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .em{font-size:22px;width:28px;text-align:center}
+.opt .chk{margin-left:auto;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:14px;color:transparent;flex:none}
+.opt.sel .chk{background:var(--accent);border-color:var(--accent);color:#fff}
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pic{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:14px;font-weight:600;line-height:1.3;transition:border-color .15s,background .15s,transform .1s;position:relative}
+.pic:active{transform:scale(.98)}
+.pic svg{width:72px;height:72px}
+.pic.sel{border-color:var(--accent);background:var(--accent-soft)}
+.pic.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px}
+.pic.wide svg{width:48px;height:48px}
+.pic .tick{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);font-size:12px;color:transparent;display:grid;place-items:center;background:#fff}
+.pic.sel .tick{background:var(--accent);border-color:var(--accent);color:#fff}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;font-weight:600;line-height:1.25;text-align:center;transition:border-color .15s,background .15s}
+.tile .e{font-size:34px;line-height:1}
+.tile.sel{border-color:var(--accent);background:var(--accent-soft)}
+.likert{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.likert button{aspect-ratio:1;border-radius:14px;background:var(--card);border:1.5px solid var(--line);font-size:18px;font-weight:600}
+.likert button.sel{border-color:var(--accent);background:var(--accent-soft)}
+.lk-l{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px}
+.quote{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:20px;font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.3;margin:8px 0 16px}
+.cta{margin-top:auto;padding-top:24px}
+.btn{width:100%;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:17px;font-size:17px;font-weight:600;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.99)}.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn.dark{background:#000;color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.link{display:block;margin:14px auto 0;color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.fine{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.inp{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;font:inherit;font-size:17px;color:var(--ink);outline:none}
+.inp:focus{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:15px;font-weight:500}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:20px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.tl{display:flex;gap:4px;margin:4px 0}
+.tl span{flex:1;height:34px;border-radius:8px;background:var(--line);display:grid;place-items:center;font-size:12px;color:var(--muted);font-weight:600}
+.tl span.urge{background:var(--warn-soft);color:var(--warn)}.tl span.end{background:var(--accent);color:#fff}
+.load{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+.lrow .lt{display:flex;justify-content:space-between;font-size:15px;font-weight:500;margin-bottom:8px}
+.lrow .lb{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.lrow .lb i{display:block;height:100%;width:0;background:var(--accent);border-radius:8px}
+.fact{margin-top:28px;min-height:150px}
+.fact .card{animation:f .4s ease}
+.fact small{display:block;color:var(--muted);font-size:12px;margin-top:10px}
+.big{font-family:Fraunces,Georgia,serif;font-size:52px;line-height:1;color:var(--accent);letter-spacing:-.03em}
+.huge{font-family:Fraunces,Georgia,serif;font-size:72px;line-height:1;color:var(--accent);letter-spacing:-.03em}
+.tag{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13px;padding:6px 10px;border-radius:999px;margin-bottom:12px;align-self:flex-start}
+.tag.hi{background:var(--hi-soft);color:#7a5a06}
+.chart{margin:16px 0 4px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.pts li{list-style:none;display:flex;gap:10px;font-size:15px;line-height:1.45}
+.pts li b{color:var(--accent)}
+.people{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:14px 0 6px}
+.people i{aspect-ratio:1;border-radius:50%;background:var(--line);transform:scale(.4);opacity:0;transition:transform .3s,opacity .3s,background .3s}
+.people i.on{transform:scale(1);opacity:1}.people i.hit{background:var(--accent)}
+.persona-q{font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.35}
+.persona-q small{display:block;font-family:Inter,sans-serif;font-size:13px;color:var(--muted);margin-top:8px}
+.sci{display:flex;gap:12px;align-items:flex-start}
+.sci .ic{flex:none;width:32px;height:32px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:15px;font-weight:700}
+.sci p{font-size:14px;line-height:1.5}.sci small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.plans{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.plan{position:relative;display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:18px 16px;width:100%}
+.plan.sel{border-color:var(--accent);background:var(--accent-soft)}
+.plan .rad{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none}
+.plan.sel .rad{border:7px solid var(--accent)}
+.plan .pn{font-weight:600;font-size:16px}.plan .pd{font-size:13px;color:var(--muted);margin-top:2px}
+.plan .pp{margin-left:auto;text-align:right}.plan .pp b{font-size:20px}.plan .pp small{display:block;font-size:12px;color:var(--muted)}
+.badge{position:absolute;top:-11px;left:16px;background:var(--hi);color:var(--ink);font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.me{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;margin-top:4px}
+.me-row{display:flex;justify-content:space-between;gap:12px;font-size:14px}.me-row span{color:var(--muted)}.me-row b{text-align:right}
+.trust{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:10px 0}
+.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+.terms{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px;text-align:left}
+.faq{margin-top:24px;display:flex;flex-direction:column;gap:8px}
+.faq h3{font-size:15px;margin-bottom:4px}
+.faq details{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px}
+.faq summary{font-weight:600;cursor:pointer;font-size:15px}.faq p{color:var(--muted);font-size:14px;line-height:1.5;margin-top:8px}
+.tst{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.tst .card{padding:16px}.tst p{font-size:15px;line-height:1.45}.tst small{display:block;color:var(--muted);font-size:13px;margin-top:8px}
+.stars{color:#D9A21B;letter-spacing:2px;font-size:14px;margin-bottom:6px}
+.overlay{position:fixed;inset:0;background:rgba(28,27,25,.5);display:none;align-items:flex-end;justify-content:center;padding:16px;z-index:10}
+.overlay.on{display:flex}
+.overlay .card{max-width:520px;width:100%;padding:24px;border:0;animation:f .3s ease}
+@media(min-width:560px){.overlay{align-items:center}}
+.ds{background:var(--accent);color:#fff;border-radius:24px;padding:28px 22px;text-align:center;margin-top:8px}
+.ds h2{color:#fff;font-size:30px}
+.ds .off{font-family:Fraunces,Georgia,serif;font-size:88px;line-height:1;margin:10px 0 4px;color:var(--hi)}
+.ds p{opacity:.9;line-height:1.5}
+.ds .price{background:rgba(255,255,255,.12);border-radius:16px;padding:14px;margin:18px 0 6px}
+.ds .price s{opacity:.7}
+.up{background:var(--card);border:1.5px solid var(--line);border-radius:24px;overflow:hidden;margin-top:8px}
+.up .hero{background:var(--hi-soft);padding:24px;display:grid;place-items:center}
+.up .body{padding:20px}
+.check{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.check li{list-style:none;display:flex;gap:10px;font-size:15px;line-height:1.45}.check li:before{content:"✓";color:var(--accent);font-weight:700}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:14px;margin:16px 0}
+.steps li{list-style:none;display:flex;gap:12px;font-size:15px;line-height:1.45}
+.steps li:before{counter-increment:s;content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px}
+.pts li .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:7px}
+.rating{display:flex;align-items:center;gap:10px;justify-content:center;font-size:13px;color:var(--muted)}
+.rating b{color:var(--ink);font-size:15px}
+.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff}
+.tst .card{display:flex;gap:12px;align-items:flex-start}
+.hero-art{display:flex;justify-content:center;margin:4px 0 14px}.hero-art svg{width:110px;height:110px}
+.restart{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px;border-radius:999px;border:1.5px solid var(--line);font-weight:600;font-size:15px;background:var(--card)}
+.fade{animation:f .3s ease}@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.err{color:var(--warn);font-size:13px;margin-top:8px;min-height:18px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Netlify Forms detection (hidden). Keep in the static HTML so Netlify registers the forms on deploy. -->
+<form name="quiz-lead" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"><input name="email"><input name="first_name"><input name="persona"><input name="kept_year"><input name="goal_name"><input name="goal_amount">
+  <input name="answers"><input name="variant"><input name="utm_source"><input name="utm_medium"><input name="utm_campaign"><input name="utm_content"><input name="utm_term">
+</form>
+<form name="checkout-intent" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"><input name="email"><input name="plan"><input name="pay_method"><input name="variant"><input name="persona"><input name="utm_campaign"><input name="utm_content">
+</form>
+
+<div class="wrap">
+  <header>
+    <button class="back" id="back" aria-label="Back">←</button>
+    <div class="logo"><b>Hold</b>itly</div>
+    <button class="close" id="close" aria-label="Close">✕</button>
+  </header>
+  <div class="bar" id="barwrap"><i id="bar"></i></div>
+  <main id="app"></main>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true"><div class="card" id="ovc"></div></div>
+
+<script>
+/* =========================================================
+   CONFIG: edit here, then deploy
+   ========================================================= */
+const CONFIG = {
+  META_PIXEL_ID: '',        // e.g. '123456789012345'
+  GA4_ID: '',               // e.g. 'G-XXXXXXXXXX'
+  PRICE_YEAR: 39.99,
+  PRICE_MONTH: 7.99,
+  DOWNSELL_PRICE_YEAR: 19.99,  // first year, shown when someone closes the paywall
+  UPSELL_PRICE: 9.99,          // one-time, budgeting template after purchase
+  TRIAL_DAYS: 7,
+  REFUND_DAYS: 14,             // refund window you promise in the FAQ. Make sure you will honor it.
+  SUPPORT_EMAIL: 'hello@holditly.app',
+  // DEMO social proof for the portfolio version (sample users, rating, reviews).
+  // These numbers and reviews are illustrative, not real. Set to false before any real traffic or ads.
+  DEMO_PROOF: false,
+  DEMO_USERS: '250,000+',
+  DEMO_RATING: '4.8',
+  DEMO_RATINGS_COUNT: '12,400',
+  DEMO_TESTIMONIALS: [
+    { text:'Held 9 things in October, bought 2. That\'s $310 in my Lisbon fund instead of my closet.', name:'Sara, 28', meta:'Late-night scroller' },
+    { text:'The day-7 check-in is weirdly freeing. Half the time I don\'t even remember what I wanted.', name:'Jordan, 34', meta:'Deal hunter' },
+    { text:'No bank login, no budget, no guilt. Just a pause. My emergency fund finally grew.', name:'Priya, 31', meta:'Mood shopper' }
+  ]
+};
+
+/* ---------- Analytics ---------- */
+(function initAnalytics(){
+  if (CONFIG.META_PIXEL_ID){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', CONFIG.META_PIXEL_ID); fbq('track','PageView');
+  }
+  if (CONFIG.GA4_ID){
+    const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+CONFIG.GA4_ID; document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',CONFIG.GA4_ID);
+  }
+})();
+const META_STD = { lead:'Lead', paywall_view:'ViewContent', begin_checkout:'InitiateCheckout' };
+const META_CUSTOM = { quiz_start:'QuizStart', quiz_complete:'QuizComplete', quiz_step:'QuizStep', plan_select:'PlanSelect',
+  downsell_view:'DownsellView', downsell_accept:'DownsellAccept', upsell_view:'UpsellView', upsell_accept:'UpsellAccept' };
+window._events = [];
+function track(name, params={}){
+  const p = Object.assign({ variant: S.variant, persona: S.persona || undefined }, utm, params);
+  window._events.push({name, ...p});
+  try{ if(window.fbq){ if(META_STD[name]) fbq('track', META_STD[name], p); else if(META_CUSTOM[name]) fbq('trackCustom', META_CUSTOM[name], p); } }catch(e){}
+  try{ if(window.gtag) gtag('event', name, p); }catch(e){}
+  if (location.search.includes('debug')) console.log('[track]', name, p);
+}
+
+/* ---------- UTM + A/B variant ---------- */
+const qs = new URLSearchParams(location.search);
+const utm = {};
+['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k=>{ if(qs.get(k)) utm[k]=qs.get(k); });
+function pickVariant(){
+  const forced = qs.get('v'); if (forced==='a'||forced==='b') return forced;
+  try{ const saved = localStorage.getItem('hl_v'); if (saved) return saved; }catch(e){}
+  const v = Math.random()<0.5 ? 'a' : 'b';
+  try{ localStorage.setItem('hl_v', v); }catch(e){}
+  return v;
+}
+/* A/B test on the result screen: a = money framing, b = time-to-goal framing */
+
+const S = { i:0, a:{}, variant: pickVariant(), persona:null, plan:'year', email:'', name:'' };
+
+/* ---------- Illustrations (inline SVG, brand colors) ---------- */
+const G='#2F6B4F', GS='#E4EFE8', Y='#F2C14E', YS='#FBF0D2', O='#C2410C', OS='#F6D9C9', K='#1C1B19', L='#E6E0D6';
+const ART = {
+  night:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="#E8E6F4"/><path d="M50 14a12 12 0 1 0 8 20 14 14 0 0 1-8-20z" fill="${Y}"/><rect x="22" y="22" width="22" height="38" rx="4" fill="${K}"/><rect x="25" y="26" width="16" height="26" rx="2" fill="#6F7DB8"/><rect x="28" y="40" width="10" height="7" rx="1.5" fill="${Y}"/><circle cx="33" cy="56" r="1.6" fill="#555"/></svg>`,
+  sale:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${OS}"/><path d="M18 30 34 14h18v18L36 48z" fill="${O}" transform="translate(2 6)"/><circle cx="48" cy="26" r="3.5" fill="${OS}"/><text x="35" y="46" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="#fff" text-anchor="middle">%</text></svg>`,
+  mood:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="#E3ECF4"/><path d="M22 40a9 9 0 0 1 2-17 12 12 0 0 1 23-2 9 9 0 0 1 3 19z" fill="#9AAFC4"/><path d="M27 46l-3 7M37 46l-3 7M47 46l-3 7" stroke="#5D86B0" stroke-width="3" stroke-linecap="round"/><rect x="40" y="44" width="14" height="12" rx="2" fill="${Y}"/><path d="M47 44v12M40 50h14" stroke="${O}" stroke-width="2"/></svg>`,
+  social:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="#F4E3EA"/><rect x="24" y="14" width="24" height="44" rx="5" fill="${K}"/><rect x="27" y="19" width="18" height="30" rx="2" fill="#E9A6BE"/><path d="M36 41s-7-4.2-7-8.4A3.8 3.8 0 0 1 36 30a3.8 3.8 0 0 1 7 2.6C43 36.8 36 41 36 41z" fill="#fff"/><circle cx="52" cy="22" r="7" fill="${O}"/><text x="52" y="25.5" font-family="Inter,sans-serif" font-weight="700" font-size="9" fill="#fff" text-anchor="middle">9</text></svg>`,
+  payday:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${GS}"/><rect x="14" y="26" width="40" height="24" rx="3" fill="#8FB89F" transform="rotate(-8 34 38)"/><rect x="18" y="24" width="40" height="24" rx="3" fill="${G}"/><circle cx="38" cy="36" r="6" fill="${GS}"/><text x="38" y="39.5" font-family="Inter,sans-serif" font-weight="700" font-size="9" fill="${G}" text-anchor="middle">$</text></svg>`,
+  trip:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="#DDEEF6"/><path d="M14 40l40-16c4-1.5 6 2 3 4L36 42l-4 12-4 1 1-10-8 3-3 5-3 .5 2-8z" fill="#fff" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="52" cy="52" r="5" fill="${Y}"/></svg>`,
+  cushion:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${OS}"/><circle cx="36" cy="36" r="18" fill="none" stroke="#fff" stroke-width="10"/><path d="M36 18a18 18 0 0 1 12.7 5.3M54 36a18 18 0 0 1-5.3 12.7M36 54a18 18 0 0 1-12.7-5.3M18 36a18 18 0 0 1 5.3-12.7" stroke="${O}" stroke-width="10" fill="none"/></svg>`,
+  big:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${YS}"/><path d="M18 36 36 20l18 16" fill="none" stroke="${G}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><rect x="23" y="34" width="26" height="20" rx="2" fill="${G}"/><rect x="32" y="42" width="8" height="12" rx="1" fill="${Y}"/></svg>`,
+  stop:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${GS}"/><path d="M36 16s-12 14-12 23a12 12 0 0 0 24 0c0-9-12-23-12-23z" fill="${G}"/><path d="M24 50 48 26" stroke="${O}" stroke-width="4" stroke-linecap="round"/></svg>`,
+  returns:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${YS}"/><path d="M18 30l18-9 18 9v20l-18 9-18-9z" fill="#E2C48A"/><path d="M18 30l18 9 18-9M36 39v20" stroke="#B8954F" stroke-width="2" fill="none"/><path d="M46 16a8 8 0 1 1-8 8" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M38 19v5h5" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  hello:`<svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="${GS}"/><path d="M27 22l9-8 9 8v34a3 3 0 0 1-3 3H30a3 3 0 0 1-3-3z" fill="${G}"/><circle cx="36" cy="24" r="3" fill="${GS}"/><rect x="31" y="34" width="3.5" height="12" rx="1.5" fill="${GS}"/><rect x="37.5" y="34" width="3.5" height="12" rx="1.5" fill="${GS}"/><path d="M50 18l3-4M54 24l5-1M20 18l-3-4" stroke="${Y}" stroke-width="3" stroke-linecap="round"/></svg>`,
+  template:`<svg viewBox="0 0 160 110" width="180"><rect x="10" y="8" width="140" height="94" rx="10" fill="#fff" stroke="${L}" stroke-width="2"/><rect x="10" y="8" width="140" height="20" rx="10" fill="${G}"/><rect x="10" y="20" width="140" height="8" fill="${G}"/><text x="20" y="22" font-family="Inter,sans-serif" font-weight="700" font-size="9" fill="#fff">Impulse-proof budget</text><g font-family="Inter,sans-serif" font-size="7" fill="${K}"><text x="20" y="44">Fun money</text><text x="20" y="60">Holding</text><text x="20" y="76">Kept</text></g><rect x="66" y="38" width="74" height="7" rx="3.5" fill="${L}"/><rect x="66" y="38" width="44" height="7" rx="3.5" fill="${Y}"/><rect x="66" y="54" width="74" height="7" rx="3.5" fill="${L}"/><rect x="66" y="54" width="22" height="7" rx="3.5" fill="${O}"/><rect x="66" y="70" width="74" height="7" rx="3.5" fill="${L}"/><rect x="66" y="70" width="58" height="7" rx="3.5" fill="${G}"/><rect x="20" y="86" width="56" height="8" rx="4" fill="${GS}"/></svg>`
+};
+
+/* ---------- Research facts (real, sourced) ---------- */
+const FACTS = {
+  impulse81:{ text:'81% of US shoppers made an impulse purchase this year, and 62% regretted at least one.', src:'PartnerCentric survey of 1,000+ US consumers, reported by Retail Brew, May 2026' },
+  bed43:{ text:'43% of shoppers say they\'re most likely to impulse-buy while shopping in bed.', src:'Capital One Shopping Research, impulse buying statistics' },
+  sale70:{ text:'70% of shoppers have bought something on impulse just because it was on sale.', src:'Capital One Shopping Research, impulse buying statistics' },
+  social22:{ text:'About 1 in 5 shoppers bought on impulse right inside a social app. TikTok led the list.', src:'PartnerCentric survey, reported by Retail Brew, May 2026' },
+  gap:{ text:'In a "hot" state (tired, stressed, excited) we misjudge what our calm self will want later. Psychologists call it the hot-cold empathy gap.', src:'Loewenstein, G. (2005). Hot-cold empathy gaps and decision making. Health Psychology' },
+  week77:{ text:'77% of shoppers buy within a week of starting to look, and 15% check out the same day.', src:'PartnerCentric survey, reported by Retail Brew, May 2026' }
+};
+const PERSONA_FACT = { night:'bed43', sale:'sale70', mood:'impulse81', social:'social22', payday:'impulse81' };
+
+/* ---------- Personas ---------- */
+const PERSONAS = {
+  night:{ name:'The late-night scroller', short:'late-night', quote:'“I do most of my shopping in bed after 11pm.”', line:'Most of your buys happen when you\'re tired and the cart is one tap away.', fix:'We hold it till morning, when the urge is usually gone.', pain:'11pm carts' },
+  sale: { name:'The deal hunter', short:'deal', quote:'“It was 40% off. I didn\'t need it, but 40%.”', line:'A countdown makes the decision for you, and "40% off" feels like saving.', fix:'We hold it past the timer. If you still want it, there\'s usually another sale.', pain:'countdown sales' },
+  mood: { name:'The mood shopper', short:'mood', quote:'“Bad day, small treat. Then another one.”', line:'A rough day turns into a small treat, then another one.', fix:'We hold the treat till the mood lifts, and show what you kept instead.', pain:'bad-day treats' },
+  social:{ name:'The feed shopper', short:'feed', quote:'“I saw it in a video. It was in my cart before the next one.”', line:'You see it, you want it, it\'s in the cart before the next video.', fix:'We give the want 7 days to fade, which it usually does.', pain:'feed finds' },
+  payday:{ name:'The payday spender', short:'payday', quote:'“The first week after pay feels rich. Then it doesn\'t.”', line:'The first days after pay feel roomy, then the month gets tight.', fix:'We hold payday buys and send the "no" straight to your goal.', pain:'payday buys' }
+};
+const GOAL = { trip:{n:'your trip'}, cushion:{n:'your safety cushion'}, big:{n:'your big purchase'}, stop:{n:'your savings'} };
+const CAT = { clothes:'clothes', beauty:'beauty buys', tech:'gadgets', home:'home stuff', food:'food delivery', other:'random finds' };
+
+/* ---------- Steps ---------- */
+const STEPS = [
+  { id:'when', type:'pics', first:true, title:'When does the "add to cart" urge usually hit?', sub:'Pick the one that sounds most like you.',
+    opts:[['night','Late at night, in bed'],['sale','When there\'s a sale or countdown'],['mood','After a rough day'],['social','Scrolling my feed'],['payday','Right after payday','wide']] },
+  { id:'mirror', type:'mirror' },
+  { id:'what', type:'multi', title:'What usually ends up in your cart?', sub:'Pick all that apply.',
+    opts:[['clothes','Clothes and shoes'],['beauty','Beauty and skincare'],['tech','Tech and gadgets'],['home','Home and decor'],['food','Food delivery'],['other','Random finds']] },
+  { id:'freq', type:'single', title:'Be honest, no judgment here. How many unplanned buys in a typical month?',
+    opts:[[1.5,'','1–2'],[4,'','3–5'],[8,'','6–10'],[12,'','Honestly, more than 10']] },
+  { id:'price', type:'single', title:'And what does one of those usually cost?',
+    opts:[[18,'','Under $25'],[38,'','$25–50'],[75,'','$50–100'],[140,'','Over $100']] },
+  { id:'regret', type:'single', hero:'returns', title:'How many of them do you end up regretting?', sub:'Returned, never used, or "why did I buy this?"',
+    opts:[[0.15,'','Almost none'],[0.3,'','Some of them'],[0.5,'','About half'],[0.7,'','Most of them']] },
+  { id:'timing', type:'timing' },
+  { id:'mood', type:'likert', title:'Does this sound like you?', quote:'“A small treat after a hard day is how I reset.”' },
+  { id:'fomo', type:'likert', title:'And this one?', quote:'“When it says only 3 left, I buy faster.”' },
+  { id:'goal', type:'pics', title:'If that money stayed with you, where would you want it to go?',
+    opts:[['trip','A trip'],['cushion','A safety cushion'],['big','Something big I really want'],['stop','Just stop the leak']] },
+  { id:'amount', type:'amount' },
+  { id:'tried', type:'multi', title:'What have you tried before?', sub:'Pick all that apply. Most people have tried something, and that\'s not the problem.',
+    opts:[['app','A budgeting app'],['sheet','A spreadsheet'],['will','Just willpower'],['unsub','Unsubscribing from store emails'],['none','Nothing yet']], exclusive:'none' },
+  { id:'science', type:'science' },
+  { id:'name', type:'name' },
+  { id:'load', type:'load' },
+  { id:'result', type:'result' },
+  { id:'email', type:'email' },
+  { id:'paywall', type:'paywall' },
+  { id:'downsell', type:'downsell' },
+  { id:'upsell', type:'upsell' },
+  { id:'done', type:'done' }
+];
+const idx = id => STEPS.findIndex(s=>s.id===id);
+const QUIZ_END = idx('load');
+
+/* ---------- Helpers ---------- */
+const $ = s=>document.querySelector(s);
+const app = $('#app');
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const perDay = (p, days) => '$' + (p/days).toFixed(2);
+const nm = (pre='', post='') => S.name ? pre + S.name + post : '';
+function when(m){ return m>24 ? (Math.round(m/6)/2)+' years' : m+' months'; }
+function calc(){
+  const f = S.a.freq ?? 4, p = S.a.price ?? 38, r = S.a.regret ?? 0.3;
+  const year = f*p*r*12, goal = S.a.amount || 1500;
+  const months = year>0 ? Math.max(1, Math.ceil(goal/(year/12))) : null;
+  return { year, month: year/12, goal, months };
+}
+function topCats(){
+  const c=(S.a.what||[]).map(k=>CAT[k]).filter(Boolean);
+  if(!c.length) return 'impulse buys';
+  return c.length===1 ? c[0] : c.slice(0,-1).slice(0,2).join(', ') + ' and ' + c[c.length-1];
+}
+function countUp(el, to, fmt, ms=900){
+  const t0=performance.now();
+  const step=t=>{ const k=Math.min(1,(t-t0)/ms); const e=1-Math.pow(1-k,3); el.textContent=fmt(to*e); if(k<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function setChrome(){
+  const s=STEPS[S.i];
+  const inQuiz = S.i<QUIZ_END;
+  // front-loaded progress: moves fast early, slower later
+  let pct = 0;
+  if (inQuiz){ const t=(S.i+1)/QUIZ_END; pct = Math.round(100*(1-Math.pow(1-t,2.2))*0.92); }
+  else if (s.type==='load') pct=96; else if (s.type==='result'||s.type==='email') pct=100;
+  $('#bar').style.width=pct+'%';
+  $('#barwrap').classList.toggle('off', !(inQuiz || ['load','result','email'].includes(s.type)));
+  $('#back').classList.toggle('on', inQuiz && S.i>0);
+  $('#close').classList.toggle('on', s.type==='paywall');
+}
+function go(id){ S.i = typeof id==='number' ? id : idx(id); render(); window.scrollTo(0,0); }
+function next(){ go(S.i+1); }
+$('#back').onclick = ()=>{ let j=S.i-1; while(j>0 && ['mirror','timing','science'].includes(STEPS[j].type)) j--; go(j); };
+$('#close').onclick = ()=> go('downsell');
+
+function overlay(html){ $('#ovc').innerHTML=html; $('#ov').classList.add('on'); }
+function closeOverlay(){ $('#ov').classList.remove('on'); }
+
+/* ---------- Render ---------- */
+function render(){
+  const s = STEPS[S.i];
+  setChrome();
+  app.innerHTML=''; const box=document.createElement('div'); box.className='fade'; box.style.cssText='display:flex;flex-direction:column;flex:1'; app.appendChild(box);
+  R[s.type](s, box);
+  if (S.i < QUIZ_END) track('quiz_step', { step: S.i+1, step_id: s.id });
+}
+const R = {};
+function head(s, box){ if(s.hero) box.insertAdjacentHTML('beforeend', `<div class="hero-art">${ART[s.hero]}</div>`); box.insertAdjacentHTML('beforeend', `<h2>${s.title}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`); }
+function ctaBtn(box, label='Continue', fn=next){ const c=document.createElement('div'); c.className='cta'; c.innerHTML=`<button class="btn">${label}</button>`; box.appendChild(c); c.firstChild.onclick=fn; return c.firstChild; }
+
+R.intro = (s, box)=>{
+  box.insertAdjacentHTML('beforeend', `
+    <span class="tag hi">2-minute quiz</span>
+    <h1>How much are your impulse buys really costing you?</h1>
+    <p class="sub" style="margin-top:12px">Answer a few quick questions and get your personal hold plan: what your "add to cart" moments add up to, and how fast that money could reach your goal.</p>
+    <div class="card" style="display:flex;gap:14px;align-items:center;padding:16px">
+      <div style="display:flex">${['night','sale','mood'].map((k,i)=>`<div style="width:44px;height:44px;margin-left:${i?-10:0}px">${ART[k]}</div>`).join('')}</div>
+      <p style="font-size:14px;line-height:1.45">Built for people who've bought the feeling, then regretted the thing.</p>
+    </div>
+    <ul class="pts" style="margin-top:18px">
+      <li>✓<span>No sign-up to start</span></li>
+      <li>✓<span>No bank login, ever</span></li>
+      <li>✓<span>Zero judgment. We've all been there.</span></li>
+    </ul>`);
+  if(CONFIG.DEMO_PROOF) box.insertAdjacentHTML('beforeend', `<div class="card" style="margin-top:18px;text-align:center;padding:14px"><div style="font-size:15px">Join <b>${CONFIG.DEMO_USERS}</b> people who hold before they buy</div><div class="rating" style="margin-top:6px"><span class="stars" style="margin:0">★★★★★</span><b>${CONFIG.DEMO_RATING}</b><span>${CONFIG.DEMO_RATINGS_COUNT} ratings</span></div></div>`);
+  ctaBtn(box, 'Start the quiz', ()=>{ track('quiz_start'); next(); });
+  box.insertAdjacentHTML('beforeend','<p class="fine">Takes about 2 minutes</p>');
+};
+
+R.pics = (s, box)=>{
+  if(s.first){
+    box.insertAdjacentHTML('beforeend', `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px"><span class="tag hi" style="margin:0">2-minute quiz</span>${CONFIG.DEMO_PROOF?`<span class="rating" style="justify-content:flex-start"><span class="stars" style="margin:0;letter-spacing:1px">★★★★★</span><span>${CONFIG.DEMO_USERS} users</span></span>`:''}</div>`);
+  }
+  head(s, box);
+  const g=document.createElement('div'); g.className='pics';
+  s.opts.forEach(([v,label,wide])=>{
+    const b=document.createElement('button'); b.className='pic'+(wide?' wide':'')+(S.a[s.id]===v?' sel':'');
+    b.innerHTML = ART[v] + `<span>${label}</span>`;
+    b.onclick=()=>{ if(s.first && !S.started){ S.started=true; track('quiz_start'); } S.a[s.id]=v; if(s.id==='when') S.persona=v; g.querySelectorAll('.pic').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); setTimeout(next,240); };
+    g.appendChild(b);
+  });
+  box.appendChild(g);
+};
+
+R.mirror = (s, box)=>{
+  const P=PERSONAS[S.persona]||PERSONAS.night, F=FACTS[PERSONA_FACT[S.persona]||'impulse81'];
+  box.insertAdjacentHTML('beforeend', `
+    <div class="stack">
+      <span class="tag">You're in good company</span>
+      <h2>So you're a bit of a ${P.short} shopper. Same here, honestly.</h2>
+      <div class="card"><div class="persona-q">${P.quote}<small>Sound familiar? It's one of the most common patterns we hear.</small></div></div>
+      <div class="card">
+        <div style="font-size:15px;line-height:1.5">${F.text}</div>
+        <div class="people" id="ppl">${'<i></i>'.repeat(30)}</div>
+        <small style="display:block;color:var(--muted);font-size:12px;margin-top:6px">Source: ${F.src}</small>
+      </div>
+    </div>`);
+  const dots=[...box.querySelectorAll('.people i')]; const hits=Math.round(30*(parseInt(F.text)||62)/100);
+  dots.forEach((d,i)=>setTimeout(()=>{ d.classList.add('on'); if(i<hits) d.classList.add('hit'); }, 30*i));
+  ctaBtn(box,'That\'s me');
+};
+
+R.tiles = (s, box)=>{
+  head(s, box);
+  const sel=new Set(S.a[s.id]||[]);
+  const g=document.createElement('div'); g.className='tiles';
+  s.opts.forEach(([v,e,label])=>{
+    const b=document.createElement('button'); b.className='tile'+(sel.has(v)?' sel':'');
+    b.innerHTML=`<span class="e">${e}</span><span>${label}</span>`;
+    b.onclick=()=>{ sel.has(v)?sel.delete(v):sel.add(v); b.classList.toggle('sel'); S.a[s.id]=[...sel]; btn.disabled=!sel.size; };
+    g.appendChild(b);
+  });
+  box.appendChild(g);
+  const btn=ctaBtn(box); btn.disabled=!sel.size;
+};
+
+R.multi = (s, box)=>{
+  head(s, box);
+  const sel=new Set(S.a[s.id]||[]);
+  const w=document.createElement('div'); w.className='opts';
+  const btns=[];
+  s.opts.forEach(([v,label])=>{
+    const b=document.createElement('button'); b.className='opt'+(sel.has(v)?' sel':'');
+    b.innerHTML=`<span>${label}</span><span class="chk">✓</span>`;
+    b.onclick=()=>{
+      if(sel.has(v)) sel.delete(v);
+      else { if(s.exclusive){ if(v===s.exclusive) sel.clear(); else sel.delete(s.exclusive); } sel.add(v); }
+      btns.forEach(([bv,bb])=>bb.classList.toggle('sel', sel.has(bv)));
+      S.a[s.id]=[...sel]; btn.disabled=!sel.size;
+    };
+    btns.push([v,b]); w.appendChild(b);
+  });
+  box.appendChild(w);
+  const btn=ctaBtn(box); btn.disabled=!sel.size;
+};
+
+R.single = (s, box)=>{
+  head(s, box);
+  const w=document.createElement('div'); w.className='opts';
+  s.opts.forEach(([v,em,label])=>{
+    const b=document.createElement('button'); b.className='opt'+(S.a[s.id]===v?' sel':'');
+    b.innerHTML=(em?`<span class="em">${em}</span>`:'')+`<span>${label}</span>`;
+    b.onclick=()=>{ S.a[s.id]=v; w.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); setTimeout(next,220); };
+    w.appendChild(b);
+  });
+  box.appendChild(w);
+};
+
+R.timing = (s, box)=>{
+  const { year } = calc(); const P=PERSONAS[S.persona]||PERSONAS.night;
+  box.insertAdjacentHTML('beforeend', `
+    <div class="stack">
+      <span class="tag">Quick reality check</span>
+      <div class="card" style="text-align:center">
+        <div style="font-size:14px;color:var(--muted)">From your answers, the buys you regret add up to about</div>
+        <div class="huge" id="cu" style="margin:10px 0 4px">$0</div>
+        <div style="font-size:14px;color:var(--muted)">a year</div>
+      </div>
+      <h2 style="margin:0">That's not a willpower problem. It's a timing problem.</h2>
+      <p class="sub" style="margin:0">Shops are built so you decide in seconds, right when the want is loudest. That want usually fades within days. Holditly simply moves the decision to day 7.</p>
+      <div class="card">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">How the urge usually goes</div>
+        <div class="tl"><span class="urge">D0</span><span class="urge" style="opacity:.75">D1</span><span class="urge" style="opacity:.5">D2</span><span>D3</span><span>D4</span><span>D5</span><span>D6</span><span class="end">D7</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px"><span>"I need it now"</span><span>"Do I still want it?"</span></div>
+      </div>
+    </div>`);
+  countUp($('#cu'), year, v=>money(v));
+  ctaBtn(box,'Makes sense');
+};
+
+R.likert = (s, box)=>{
+  box.insertAdjacentHTML('beforeend', `<h2>${s.title}</h2><div class="quote">${s.quote}</div>`);
+  const g=document.createElement('div'); g.className='likert';
+  [1,2,3,4,5].forEach(n=>{
+    const b=document.createElement('button'); b.textContent=n; if(S.a[s.id]===n) b.classList.add('sel');
+    b.onclick=()=>{ S.a[s.id]=n; g.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); setTimeout(next,220); };
+    g.appendChild(b);
+  });
+  box.appendChild(g);
+  box.insertAdjacentHTML('beforeend','<div class="lk-l"><span>Not me</span><span>Totally me</span></div>');
+};
+
+R.amount = (s, box)=>{
+  const gl = GOAL[S.a.goal]||GOAL.trip;
+  head({ hero:S.a.goal, title:`How much do you need for ${gl.n}?`, sub:'A rough number is fine. You can change it anytime.' }, box);
+  box.insertAdjacentHTML('beforeend', `
+    <input class="inp" id="amt" inputmode="numeric" placeholder="$1,500" value="${S.a.amount?('$'+S.a.amount.toLocaleString('en-US')):''}">
+    <div class="chips">${[500,1500,3000,5000].map(v=>`<button class="chip${S.a.amount===v?' sel':''}" data-v="${v}">$${v.toLocaleString('en-US')}</button>`).join('')}</div>`);
+  const btn=ctaBtn(box,'Continue',()=>{ S.a.amount=parse(); next(); });
+  const inp=$('#amt');
+  const parse=()=>{ const n=parseInt(inp.value.replace(/[^0-9]/g,''),10); return isNaN(n)?0:n; };
+  const upd=()=>{ btn.disabled = parse()<50; };
+  inp.oninput=()=>{ const n=parse(); inp.value=n?'$'+n.toLocaleString('en-US'):''; box.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel', +c.dataset.v===n)); upd(); };
+  box.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ inp.value='$'+(+c.dataset.v).toLocaleString('en-US'); inp.oninput(); });
+  upd();
+};
+
+R.science = (s, box)=>{
+  const triedKey = ['app','sheet','will','unsub','none'].find(k=>(S.a.tried||[]).includes(k));
+  const tried = { unsub:'Unsubscribing helps, until the next ad finds you. Holditly works wherever the urge comes from.', app:'Budgeting apps ask you to track everything, after you\'ve already paid. Holditly steps in before you pay, and there\'s nothing to track.',
+                  sheet:'Spreadsheets show the damage after the fact. Holditly steps in before you pay.',
+                  will:'Willpower runs out exactly when you\'re tired or stressed. Holditly doesn\'t need it: it just waits for you.',
+                  none:'Good news: you don\'t need a budget or a bank login to start.' }[triedKey] || '';
+  const proof = proofBlock();
+  box.insertAdjacentHTML('beforeend', `
+    <div class="stack">
+      <span class="tag">Why this works</span>
+      <h2 style="margin:0">Built on how decisions actually work</h2>
+      <p class="sub" style="margin:0">${tried}</p>
+      <div class="card stack" style="gap:14px">
+        <div class="sci"><div class="ic">1</div><p>${FACTS.gap.text}<small>${FACTS.gap.src}</small></p></div>
+        <div class="sci"><div class="ic">2</div><p>A pause turns a "hot" decision into a calm one. That's the whole idea behind a 7-day hold.</p></div>
+        <div class="sci"><div class="ic">3</div><p>Seeing money move toward a goal makes saying "no" feel like a win, not a loss.</p></div>
+      </div>
+      ${proof}
+    </div>`);
+  ctaBtn(box);
+};
+
+const AVC=['#2F6B4F','#C2410C','#6F7DB8','#B8954F'];
+function tCard(t,i){ return `<div class="card"><div class="av" style="background:${AVC[i%AVC.length]}">${t.name[0]}</div><div><div class="stars">★★★★★</div><p>“${t.text}”</p><small>${t.name} · ${t.meta}</small></div></div>`; }
+function proofBlock(n=2, withRating=false){
+  if(!CONFIG.DEMO_PROOF) return '';
+  let h='';
+  if(withRating) h+=`<div class="card" style="margin-top:20px;text-align:center;padding:16px"><div class="rating"><span class="stars" style="margin:0">★★★★★</span><b>${CONFIG.DEMO_RATING}</b><span>from ${CONFIG.DEMO_RATINGS_COUNT} ratings</span></div><div style="font-size:14px;margin-top:6px">${CONFIG.DEMO_USERS} people already hold before they buy</div></div>`;
+  h+=`<div class="tst">${CONFIG.DEMO_TESTIMONIALS.slice(0,n).map(tCard).join('')}</div>`;
+  return h;
+}
+
+R.name = (s, box)=>{
+  head({ hero:'hello', title:'Almost done. What should we call you?', sub:'So your plan feels like yours. First name is enough.' }, box);
+  box.insertAdjacentHTML('beforeend', `<input class="inp" id="nm" autocomplete="given-name" placeholder="First name" value="${S.name}">`);
+  ctaBtn(box,'Build my plan',()=>{ S.name=$('#nm').value.trim().replace(/[<>]/g,'').slice(0,30); next(); });
+  box.insertAdjacentHTML('beforeend','<button class="link" id="skip">Skip</button>');
+  $('#skip').onclick=()=>{ S.name=''; next(); };
+};
+
+R.load = (s, box)=>{
+  track('quiz_complete', { answers: JSON.stringify(S.a) });
+  const rows=['Looking at when you buy','Counting what you regret','Setting up '+(GOAL[S.a.goal]||GOAL.trip).n];
+  const facts=[FACTS.impulse81, FACTS.week77, FACTS.gap];
+  const popups=[
+    { at:[0,55], id:'homescreen', q:'Quick one while we work: are shopping apps on your phone\'s home screen?' },
+    { at:[1,55], id:'freeship', q:'Have you ever added something just to get free shipping?' }
+  ];
+  box.insertAdjacentHTML('beforeend', `<h2>Building your hold plan${nm(', ')}…</h2><p class="sub">This takes a few seconds.</p>
+    <div class="load">${rows.map((r,i)=>`<div class="lrow"><div class="lt"><span>${r}</span><span id="lp${i}">0%</span></div><div class="lb"><i id="lb${i}"></i></div></div>`).join('')}</div>
+    <div class="fact" id="fact"></div>`);
+  const cards=[]; facts.forEach((F,i)=>{ cards.push(`<div class="card"><div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">DID YOU KNOW</div><div style="font-size:15px;line-height:1.5">${F.text}</div><small>${F.src}</small></div>`); if(CONFIG.DEMO_PROOF && CONFIG.DEMO_TESTIMONIALS[i]) cards.push(`<div class="tst" style="margin:0">${tCard(CONFIG.DEMO_TESTIMONIALS[i],i)}</div>`); });
+  let fi=0; const showFact=()=>{ $('#fact') && ($('#fact').innerHTML=cards[fi%cards.length]); fi++; };
+  showFact(); const ft=setInterval(showFact, 3200);
+  let paused=false;
+  const ask=(p, resume)=>{
+    paused=true;
+    overlay(`<div class="tag">Quick question</div><h2 style="font-size:22px">${p.q}</h2><div style="display:flex;gap:10px;margin-top:16px"><button class="btn ghost" data-v="no">No</button><button class="btn" data-v="yes">Yes</button></div>`);
+    $('#ovc').querySelectorAll('button').forEach(b=>b.onclick=()=>{ S.a[p.id]=b.dataset.v; closeOverlay(); paused=false; resume(); });
+  };
+  const runRow=(r)=>{
+    if(r>=rows.length){ clearInterval(ft); setTimeout(next,500); return; }
+    let p=0; const pending=popups.filter(x=>x.at[0]===r);
+    const t=setInterval(()=>{
+      if(paused) return;
+      p=Math.min(100,p+2.5+Math.random()*4);
+      const pp=pending.find(x=>!x.done && p>=x.at[1]);
+      if(pp){ pp.done=true; ask(pp, ()=>{}); }
+      $('#lb'+r).style.width=p+'%'; $('#lp'+r).textContent=Math.round(p)+'%';
+      if(p>=100){ clearInterval(t); setTimeout(()=>runRow(r+1),200); }
+    },70);
+  };
+  runRow(0);
+};
+
+function chartSVG(year, goal){
+  const W=320,H=150,pad=8,m=12; const showGoal = goal<=year*2; const mx=(showGoal?Math.max(goal,year):year)*1.08;
+  const x=i=>pad+(W-2*pad)*i/m, y=v=>H-pad-(H-2*pad)*v/mx;
+  const pts=[...Array(m+1)].map((_,i)=>`${x(i)},${y(year*i/m)}`).join(' ');
+  const gy=y(goal), hit=year>=goal?Math.ceil(goal/(year/12)):null;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Projected money kept over 12 months">
+    ${showGoal?`<line x1="${pad}" x2="${W-pad}" y1="${gy}" y2="${gy}" stroke="${Y}" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="${W-pad}" y="${gy-6}" text-anchor="end" font-size="11" fill="#6B675F">Goal ${money(goal)}</text>`:`<text x="${W-pad}" y="${H-22}" text-anchor="end" font-size="11" fill="#6B675F">${money(year)} kept in year one</text>`}
+    <polyline points="${x(0)},${y(0)} ${x(m)},${y(0)}" fill="none" stroke="#cfc6b8" stroke-width="3"/>
+    <polyline points="${pts}" fill="none" stroke="${G}" stroke-width="3" stroke-linecap="round"/>
+    ${hit?`<circle cx="${x(hit)}" cy="${gy}" r="5" fill="${G}"/>`:''}
+    <text x="${pad}" y="${H-1}" font-size="10" fill="#6B675F">Now</text>
+    <text x="${W-pad}" y="${H-1}" text-anchor="end" font-size="10" fill="#6B675F">12 months</text></svg>`;
+}
+function personalLines(){
+  const P=PERSONAS[S.persona]||PERSONAS.night, L=[];
+  L.push(['',P.line + ' ' + P.fix]);
+  if((S.a.what||[]).length) L.push(['',`Your hold list will mostly be <b>${topCats()}</b>. We'll ask about each one on day 7.`]);
+  if((S.a.mood||0)>=4) L.push(['','Bad-day treats hit you hard. We\'ll hold them till the mood lifts.']);
+  if((S.a.fomo||0)>=4) L.push(['','"Only 3 left" works on you. It\'s rarely true for long, and a hold gets you past it.']);
+  if(S.a.freeship==='yes') L.push(['','Free-shipping top-ups count too. We\'ll flag them.']);
+  return L.slice(0,4);
+}
+
+R.result = (s, box)=>{
+  const c=calc(), P=PERSONAS[S.persona]||PERSONAS.night, gl=GOAL[S.a.goal]||GOAL.trip;
+  const far = c.months>24;
+  const headline = (S.variant==='a' || far)
+    ? `<div class="big" id="rv">$0</div><p style="font-weight:600;font-size:18px;margin-top:6px">a year back in your pocket</p>`
+    : `<div class="big">${c.months} months</div><p style="font-weight:600;font-size:18px;margin-top:6px">to ${gl.n}, from regret buys alone</p>`;
+  track('result_view');
+  box.insertAdjacentHTML('beforeend', `
+    <span class="tag">${P.name}</span>
+    <h2 style="margin-bottom:16px">${S.name?S.name+', here\'s':'Here\'s'} your hold plan</h2>
+    <div class="card">${headline}
+      <div class="chart">${chartSVG(c.year,c.goal)}</div>
+      <div class="legend"><span><i style="background:${G}"></i>With Holditly</span><span><i style="background:#cfc6b8"></i>Without</span></div>
+    </div>
+    <ul class="pts">${personalLines().map(([e,t])=>`<li><i class="dot"></i><span>${t}</span></li>`).join('')}
+      <li><i class="dot"></i><span>Letting go of the buys you'd regret keeps about <b>${money(c.month)} a month</b>${(S.variant==='a'||far)?` and gets you to ${gl.n} in about <b>${when(c.months)}</b>`:`, or <b>${money(c.year)} a year</b>`}.</span></li>
+    </ul>
+    <p class="fine" style="text-align:left">Estimate from your answers: buys a month × usual price × share you regret × 12. Holditly never moves your money.</p>`);
+  if(S.variant==='a'||far) countUp($('#rv'), c.year, v=>money(v));
+  ctaBtn(box,'Save my plan');
+};
+
+function encode(o){ return Object.keys(o).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(o[k]??'')).join('&'); }
+function postForm(name, data){ return fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: encode({'form-name':name, ...data}) }).catch(()=>{}); }
+
+R.email = (s, box)=>{
+  box.insertAdjacentHTML('beforeend', `
+    <h2>Where should we send your hold plan${nm(', ')}?</h2>
+    <p class="sub">We'll save it and send you one email when Holditly opens. Everyone on the list gets 3 months of premium free.</p>
+    <input class="inp" id="em" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${S.email}">
+    <div class="err" id="err"></div>`);
+  ctaBtn(box,'Continue',()=>{
+    const v=$('#em').value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ $('#err').textContent='Please enter a valid email.'; return; }
+    S.email=v; const c=calc();
+    postForm('quiz-lead',{ email:v, first_name:S.name, persona:S.persona, kept_year:Math.round(c.year), goal_name:S.a.goal, goal_amount:S.a.amount, answers:JSON.stringify(S.a), variant:S.variant, ...utm });
+    track('lead',{ value:0, currency:'USD' }); next();
+  });
+  $('#em').oninput=()=>$('#err').textContent='';
+  box.insertAdjacentHTML('beforeend','<p class="fine">No spam. We don\'t sell or share your email. Unsubscribe anytime.</p>');
+};
+
+function faqHTML(){
+  const T=CONFIG.TRIAL_DAYS;
+  return `<div class="faq">
+    <h3>Questions</h3>
+    <details><summary>Will I be charged during the free trial?</summary><p>No. You pay nothing for ${T} days. We'll email you a reminder 2 days before the trial ends.</p></details>
+    <details><summary>How do I cancel?</summary><p>Anytime, in 2 taps: Account → Subscription → Cancel. Or email ${CONFIG.SUPPORT_EMAIL}. Cancel before the trial ends and you won't be charged. After that, you keep access until the end of the period you paid for.</p></details>
+    <details><summary>Can I get a refund?</summary><p>Yes. If you're charged and it's not for you, email ${CONFIG.SUPPORT_EMAIL} within ${CONFIG.REFUND_DAYS} days of the charge for a full refund. No forms, no guilt trip.</p></details>
+    <details><summary>How do I get access after I sign up?</summary><p>Right after checkout we email you a login link. Open Holditly in any browser on your phone or laptop and sign in with the same email. Your hold plan will already be there.</p></details>
+    <details><summary>Do I need to connect my bank?</summary><p>No. Holditly only needs the price of what you're thinking about. Nothing is linked.</p></details>
+    <details><summary>Where does the kept money go?</summary><p>It stays in your account. Holditly counts what you didn't spend and shows it against your goal, so you can move it to savings yourself.</p></details>
+  </div>`;
+}
+function renewalText(plan){
+  const T=CONFIG.TRIAL_DAYS;
+  if(plan==='year') return `Free for ${T} days, then $${CONFIG.PRICE_YEAR} billed once a year. Renews automatically each year at $${CONFIG.PRICE_YEAR} unless you cancel at least 24 hours before renewal. Cancel anytime in your account.`;
+  if(plan==='year_50') return `$${CONFIG.DOWNSELL_PRICE_YEAR} for your first year, then renews at $${CONFIG.PRICE_YEAR}/year unless you cancel at least 24 hours before renewal. Cancel anytime in your account.`;
+  return `$${CONFIG.PRICE_MONTH} billed today and every month after. Renews automatically unless you cancel at least 24 hours before renewal. Cancel anytime in your account.`;
+}
+
+function checkout(plan, method){
+  const val = plan==='year'?CONFIG.PRICE_YEAR : plan==='year_50'?CONFIG.DOWNSELL_PRICE_YEAR : CONFIG.PRICE_MONTH;
+  S.plan=plan;
+  track('begin_checkout',{ plan, pay_method:method, value:val, currency:'USD' });
+  postForm('checkout-intent',{ email:S.email, plan, pay_method:method, variant:S.variant, persona:S.persona, utm_campaign:utm.utm_campaign, utm_content:utm.utm_content });
+  overlay(`<div class="tag">Early access</div><h2>You're early${nm(', ')}. Nothing was charged.</h2>
+    <p class="sub" style="margin-top:8px">Holditly isn't open yet, so no card was asked for and no payment was taken. Your spot and your plan choice are saved: when we open, you get <b>3 months of premium free</b>.</p>
+    <button class="btn" id="ovgo">Continue</button>`);
+  $('#ovgo').onclick=()=>{ closeOverlay(); go('upsell'); };
+}
+
+R.paywall = (s, box)=>{
+  const c=calc(), P=PERSONAS[S.persona]||PERSONAS.night, gl=GOAL[S.a.goal]||GOAL.trip, T=CONFIG.TRIAL_DAYS;
+  track('paywall_view');
+  box.insertAdjacentHTML('beforeend', `
+    <span class="tag">Your plan is ready</span>
+    <h2>${S.name?S.name+', start':'Start'} holding. Watch ${gl.n} get closer.</h2>
+    <div class="me">
+      <div class="me-row"><span>Your pattern</span><b>${P.name}</b></div>
+      <div class="me-row"><span>Usually in your cart</span><b>${topCats()}</b></div>
+      <div class="me-row"><span>Could keep a year</span><b style="color:${G}">${money(c.year)}</b></div>
+      <div class="me-row"><span>Your goal</span><b>${money(c.goal)} in ~${when(c.months)}</b></div>
+    </div>
+    <div class="plans">
+      <button class="plan" data-p="year"><span class="badge">Most popular · ${T} days free</span><span class="rad"></span>
+        <span><div class="pn">Yearly</div><div class="pd">${T}-day free trial, then $${CONFIG.PRICE_YEAR}/year</div></span>
+        <span class="pp"><b>${perDay(CONFIG.PRICE_YEAR,365)}</b><small>per day</small></span></button>
+      <button class="plan" data-p="month"><span class="rad"></span>
+        <span><div class="pn">Monthly</div><div class="pd">$${CONFIG.PRICE_MONTH}/month, no trial</div></span>
+        <span class="pp"><b>${perDay(CONFIG.PRICE_MONTH,30)}</b><small>per day</small></span></button>
+    </div>
+    <ul class="pts" style="margin-top:0">
+      <li>✓<span>Unlimited holds and a day-7 check-in for each</span></li>
+      <li>✓<span>Kept counter and a goal bar for ${gl.n}</span></li>
+      <li>✓<span>See any price in hours of your work</span></li>
+      <li>✓<span>No bank login. Ever.</span></li>
+    </ul>
+    <div class="cta" style="padding-top:20px">
+      <button class="btn dark" id="apay"><svg width="17" height="20" viewBox="0 0 17 20" aria-hidden="true"><path fill="#fff" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.2zM11.6 3c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.5-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.4z"/></svg> Pay</button>
+      <div class="or">or</div>
+      <button class="btn" id="buy"></button>
+      <p class="terms" id="terms"></p>
+      <div class="trust"><span>Secure checkout</span><span>·</span><span>${CONFIG.REFUND_DAYS}-day refund</span><span>·</span><span>Cancel anytime</span></div>
+    </div>
+    ${proofBlock(3, true)}
+    <div class="card" style="margin-top:20px;font-size:14px;line-height:1.5"><div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">THE SCIENCE</div>${FACTS.gap.text}<small style="display:block;color:var(--muted);font-size:12px;margin-top:6px">${FACTS.gap.src}</small></div>
+    ${faqHTML()}
+    <button class="restart" data-restart>↻ Retake the quiz</button>`);
+  const setPlan=p=>{
+    S.plan=p;
+    box.querySelectorAll('.plan').forEach(b=>b.classList.toggle('sel', b.dataset.p===p));
+    $('#buy').textContent = p==='year'?`Start my ${T}-day free trial`:'Continue with monthly';
+    $('#terms').textContent = renewalText(p);
+  };
+  box.querySelectorAll('.plan').forEach(b=>b.onclick=()=>{ setPlan(b.dataset.p); track('plan_select',{plan:b.dataset.p}); });
+  setPlan('year');
+  $('#buy').onclick=()=>checkout(S.plan,'card');
+  $('#apay').onclick=()=>checkout(S.plan,'apple_pay');
+};
+
+R.downsell = (s, box)=>{
+  track('downsell_view');
+  const gl=GOAL[S.a.goal]||GOAL.trip, c=calc();
+  box.insertAdjacentHTML('beforeend', `
+    <div class="ds">
+      <div style="font-size:14px;opacity:.85">Before you go${nm(', ')}</div>
+      <div class="off">50% off</div>
+      <h2>your first year</h2>
+      <p style="margin-top:10px">We get it. Another subscription is a real decision. So here's half off, because ${money(c.year)} a year toward ${gl.n} is worth a shot.</p>
+      <div class="price"><s>$${CONFIG.PRICE_YEAR}</s> &nbsp;<b style="font-size:26px">$${CONFIG.DOWNSELL_PRICE_YEAR}</b> for the first year<div style="font-size:13px;opacity:.85;margin-top:4px">That's ${perDay(CONFIG.DOWNSELL_PRICE_YEAR,365)} a day</div></div>
+    </div>`);
+  const cta=document.createElement('div'); cta.className='cta';
+  cta.innerHTML=`<button class="btn dark" id="dapay"><svg width="17" height="20" viewBox="0 0 17 20" aria-hidden="true"><path fill="#fff" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.2zM11.6 3c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.5-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.4z"/></svg> Pay</button>
+    <div class="or">or</div><button class="btn" id="dbuy">Claim 50% off</button>
+    <p class="terms">${renewalText('year_50')}</p>
+    <button class="link" id="dno">No thanks, maybe later</button>`;
+  box.appendChild(cta);
+  const take=m=>{ track('downsell_accept',{pay_method:m}); checkout('year_50',m); };
+  $('#dbuy').onclick=()=>take('card'); $('#dapay').onclick=()=>take('apple_pay');
+  $('#dno').onclick=()=>{ S.plan=null; go('done'); };
+};
+
+R.upsell = (s, box)=>{
+  track('upsell_view');
+  box.insertAdjacentHTML('beforeend', `
+    <span class="tag">One-time add-on</span>
+    <h2>Make the money you keep actually stick</h2>
+    <p class="sub">Holditly stops the impulse. This template decides where the kept money goes.</p>
+    <div class="up">
+      <div class="hero">${ART.template}</div>
+      <div class="body">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">Impulse-proof budget template</b><b style="font-size:22px">$${CONFIG.UPSELL_PRICE}</b></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px">One-time payment · Google Sheets & Notion</div>
+        <ul class="check">
+          <li>A guilt-free "fun money" envelope, so planned treats stay planned</li>
+          <li>Goal tracker that matches your Holditly Kept counter</li>
+          <li>30-second "before I buy" checklist</li>
+        </ul>
+      </div>
+    </div>`);
+  const cta=document.createElement('div'); cta.className='cta';
+  cta.innerHTML=`<button class="btn" id="uyes">Add to my order · $${CONFIG.UPSELL_PRICE}</button><p class="fine">Charged once to the same payment method. No subscription.</p><button class="link" id="uno">No thanks, continue</button>`;
+  box.appendChild(cta);
+  $('#uyes').onclick=()=>{
+    track('upsell_accept',{ value:CONFIG.UPSELL_PRICE, currency:'USD' });
+    postForm('checkout-intent',{ email:S.email, plan:'upsell_template', pay_method:'saved', variant:S.variant, persona:S.persona, utm_campaign:utm.utm_campaign, utm_content:utm.utm_content });
+    S.upsell=true;
+    overlay(`<h2>Noted${nm(', ')}!</h2><p class="sub" style="margin-top:8px">Nothing was charged. We're still in early access, so the template will be <b>free</b> for you when we open.</p><button class="btn" id="ovgo">Continue</button>`);
+    $('#ovgo').onclick=()=>{ closeOverlay(); go('done'); };
+  };
+  $('#uno').onclick=()=>go('done');
+};
+
+R.done = (s, box)=>{
+  const gl=GOAL[S.a.goal]||GOAL.trip;
+  box.insertAdjacentHTML('beforeend', `
+    <span class="tag">You're on the list</span>
+    <h2>${S.plan?'Your spot is saved':'Your plan is saved'}${nm(', ')}.</h2>
+    <p class="sub">Here's exactly how you'll get into Holditly when it opens:</p>
+    <ol class="steps">
+      <li><span>We email a login link to <b>${S.email||'your email'}</b>. Check spam just in case.</span></li>
+      <li><span>Open Holditly in any browser on your phone or laptop. Nothing to install.</span></li>
+      <li><span>Sign in with the same email. Your hold plan and ${gl.n} goal are already set up.</span></li>
+      <li><span>Add your first hold. We'll check back on day 7.</span></li>
+    </ol>
+    <div class="card" style="font-size:14px;line-height:1.5">Questions? Write to <b>${CONFIG.SUPPORT_EMAIL}</b>. A real person answers.</div>
+    <button class="restart" data-restart>↻ Take the quiz again</button>`);
+};
+
+function restart(){
+  closeOverlay();
+  Object.assign(S, { i:0, a:{}, persona:null, plan:'year', email:'', name:'', started:false, upsell:false });
+  render(); window.scrollTo(0,0);
+}
+document.addEventListener('click', e=>{ if(e.target.closest('[data-restart]')) restart(); });
+
+render();
+</script>
+</body>
+</html>
