@@ -212,7 +212,7 @@ const CONFIG = {
 })();
 const META_STD = { lead:'Lead', paywall_view:'ViewContent', begin_checkout:'InitiateCheckout' };
 const META_CUSTOM = { quiz_start:'QuizStart', quiz_complete:'QuizComplete', quiz_step:'QuizStep', plan_select:'PlanSelect',
-  downsell_view:'DownsellView', downsell_accept:'DownsellAccept', upsell_view:'UpsellView', upsell_accept:'UpsellAccept' };
+  downsell_view:'DownsellView', downsell_accept:'DownsellAccept', upsell_view:'UpsellView', upsell_accept:'UpsellAccept', exit_intent:'ExitIntent' };
 window._events = [];
 function track(name, params={}){
   const p = Object.assign({ variant: S.variant, persona: S.persona || undefined }, utm, params);
@@ -348,7 +348,7 @@ function setChrome(){
 function go(id){ S.i = typeof id==='number' ? id : idx(id); render(); window.scrollTo(0,0); }
 function next(){ go(S.i+1); }
 $('#back').onclick = ()=>{ let j=S.i-1; while(j>0 && ['mirror','timing','science'].includes(STEPS[j].type)) j--; go(j); };
-$('#close').onclick = ()=> go('downsell');
+$('#close').onclick = ()=>{ exitShown=true; go('downsell'); };
 
 function overlay(html){ $('#ovc').innerHTML=html; $('#ov').classList.add('on'); }
 function closeOverlay(){ $('#ov').classList.remove('on'); }
@@ -807,6 +807,22 @@ function restart(){
   render(); window.scrollTo(0,0);
 }
 document.addEventListener('click', e=>{ if(e.target.closest('[data-restart]')) restart(); });
+
+/* ---------- Exit intent on the paywall (shown once) ---------- */
+// Mobile: catch the browser Back button. Desktop: cursor leaving through the top of the window.
+let exitShown=false, exitArmed=false;
+function onPaywall(){ return STEPS[S.i] && STEPS[S.i].type==='paywall'; }
+function triggerExit(source){
+  if(exitShown || !onPaywall() || $('#ov').classList.contains('on')) return false;
+  exitShown=true; track('exit_intent',{ source }); go('downsell'); return true;
+}
+const _render = render;
+render = function(){
+  _render();
+  if(onPaywall() && !exitArmed && !exitShown){ exitArmed=true; try{ history.pushState({hl:'paywall'}, ''); }catch(e){} }
+};
+window.addEventListener('popstate', ()=>{ if(exitArmed && !exitShown && onPaywall()) triggerExit('back_button'); });
+document.addEventListener('mouseout', e=>{ if(!e.relatedTarget && e.clientY<=0) triggerExit('mouse_leave'); });
 
 render();
 </script>
