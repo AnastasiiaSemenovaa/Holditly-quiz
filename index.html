@@ -180,6 +180,7 @@ h1{font-size:34px}h2{font-size:26px;margin-bottom:8px}
 const CONFIG = {
   META_PIXEL_ID: '1147565131061927',        // e.g. '123456789012345'
   GA4_ID: '',               // e.g. 'G-XXXXXXXXXX'
+  AMPLITUDE_API_KEY: '',    // Amplitude project API key (client-side key, not the secret key)
   PRICE_YEAR: 39.99,
   PRICE_MONTH: 7.99,
   DOWNSELL_PRICE_YEAR: 19.99,  // first year, shown when someone closes the paywall
@@ -210,6 +211,13 @@ const CONFIG = {
     const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+CONFIG.GA4_ID; document.head.appendChild(s);
     window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',CONFIG.GA4_ID);
   }
+  if (CONFIG.AMPLITUDE_API_KEY){
+    // Events fired before the SDK finishes loading are queued, then flushed on load.
+    window._ampQ = [];
+    const s=document.createElement('script'); s.async=true; s.src='https://cdn.amplitude.com/script/'+CONFIG.AMPLITUDE_API_KEY+'.js';
+    s.onload=()=>{ try{ window.amplitude.init(CONFIG.AMPLITUDE_API_KEY, {autocapture:false}); window._ampQ.forEach(e=>window.amplitude.track(e[0], e[1])); }catch(err){} window._ampQ=null; };
+    document.head.appendChild(s);
+  }
 })();
 const META_STD = { lead:'Lead', paywall_view:'ViewContent', begin_checkout:'InitiateCheckout' };
 const META_CUSTOM = { quiz_start:'QuizStart', quiz_complete:'QuizComplete', quiz_step:'QuizStep', plan_select:'PlanSelect',
@@ -220,13 +228,19 @@ function track(name, params={}){
   window._events.push({name, ...p});
   try{ if(window.fbq){ if(META_STD[name]) fbq('track', META_STD[name], p); else if(META_CUSTOM[name]) fbq('trackCustom', META_CUSTOM[name], p); } }catch(e){}
   try{ if(window.gtag) gtag('event', name, p); }catch(e){}
+  try{ if(CONFIG.AMPLITUDE_API_KEY){ if(window._ampQ) window._ampQ.push([name, p]); else if(window.amplitude) window.amplitude.track(name, p); } }catch(e){}
   if (location.search.includes('debug')) console.log('[track]', name, p);
 }
 
 /* ---------- UTM + A/B variant ---------- */
 const qs = new URLSearchParams(location.search);
 const utm = {};
-['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k=>{ if(qs.get(k)) utm[k]=qs.get(k); });
+['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k=>{
+  // Keep UTMs for the whole session, so a reload or restart does not lose attribution.
+  let v = qs.get(k);
+  try{ if(v) sessionStorage.setItem('hl_'+k, v); else v = sessionStorage.getItem('hl_'+k); }catch(e){}
+  if(v) utm[k]=v;
+});
 function pickVariant(){
   const forced = qs.get('v'); if (forced==='a'||forced==='b') return forced;
   try{ const saved = localStorage.getItem('hl_v'); if (saved) return saved; }catch(e){}
